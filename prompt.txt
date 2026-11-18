@@ -23,3 +23,19 @@
 [2026-11-18 00:28:39] bitte update/ergänzen jeder prompt-zeile mit timestamp prefix format [YYYY-MM-DD HH:mm:ss]
 
 [2026-11-18 00:30:16] bitte die nummerierung in der prompt-zeile entfernen
+
+[2026-11-18 00:35:03] in welchem repo hast du commited? wo? local? oder auf github?
+
+[2026-11-18 00:36:48] mit wlechem command kann ich alle local repo listen?
+
+[2026-11-18 00:52:41] add all new file to git
+
+[2026-11-18 00:53:10] ja, commit mit dieser message
+
+[2026-11-18 00:58:44] aendere git username zu us24041awscli
+
+[2026-11-18 00:59:10] ja, commits umschreiben
+
+[2026-11-18 03:06:55] Initialisiere hier ein Git-Repo, erstelle eine passende .gitignore für Node.js (ignoriere node_modules), mache einen ersten Commit mit der Nachricht 'Initial commit' und pushe alles zu unserem GitHub-Remote unter (ssh) git@github.com:user02github/claude-poc.git
+
+[2026-11-18 03:11:07] prompt.txt mit den neuen Prompts aktualisieren und pushen
