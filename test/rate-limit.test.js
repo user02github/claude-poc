@@ -58,6 +58,7 @@ describe('Rate-Limiting für /api', () => {
       for (let i = 0; i < 5; i++) {
         assert.equal((await fetch(`${baseUrl}/info`)).status, 200);
         assert.equal((await fetch(`${baseUrl}/`)).status, 200);
+        assert.equal((await fetch(`${baseUrl}/health`)).status, 200);
       }
     });
   });

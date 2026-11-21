@@ -55,6 +55,39 @@ describe('GET /info', () => {
   });
 });
 
+describe('GET /health', () => {
+  test('antwortet mit 200 und { status: "ok", uptime }', async () => {
+    const res = await fetch(`${baseUrl}/health`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type'), /application\/json/);
+
+    const body = await res.json();
+    assert.deepEqual(Object.keys(body).sort(), ['status', 'uptime']);
+    assert.equal(body.status, 'ok');
+    assert.equal(typeof body.uptime, 'number');
+    assert.ok(body.uptime >= 0, 'uptime darf nicht negativ sein');
+  });
+
+  test('uptime kommt aus process.uptime()', async (t) => {
+    t.mock.method(process, 'uptime', () => 42.5);
+
+    const res = await fetch(`${baseUrl}/health`);
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { status: 'ok', uptime: 42.5 });
+  });
+
+  test('antwortet mit 500 und Fehler-JSON, wenn ein Fehler auftritt', async (t) => {
+    t.mock.method(process, 'uptime', () => {
+      throw new Error('simulierter Fehler');
+    });
+    t.mock.method(console, 'error', () => {});
+
+    const res = await fetch(`${baseUrl}/health`);
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), { error: 'Interner Serverfehler' });
+  });
+});
+
 describe('Unbekannte Route', () => {
   test('antwortet mit 404', async () => {
     const res = await fetch(`${baseUrl}/gibt-es-nicht`);
