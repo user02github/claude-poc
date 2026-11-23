@@ -83,6 +83,18 @@ function createApp({ rateLimit: rateLimitOptions } = {}) {
     }
   });
 
+  app.get('/health', (req, res) => {
+    try {
+      res.status(200).json({
+        status: 'ok',
+        uptime: process.uptime(),
+      });
+    } catch (err) {
+      console.error('Fehler in GET /health:', err);
+      res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+  });
+
   app.post('/api/echo', (req, res) => {
     try {
       if (!req.is('application/json')) {
