@@ -56,16 +56,23 @@ describe('GET /info', () => {
 });
 
 describe('GET /health', () => {
-  test('antwortet mit 200 und { status: "ok", uptime }', async () => {
+  test('antwortet mit 200 und { status: "ok", uptime, timestamp }', async () => {
+    const before = Date.now();
     const res = await fetch(`${baseUrl}/health`);
+    const after = Date.now();
     assert.equal(res.status, 200);
     assert.match(res.headers.get('content-type'), /application\/json/);
 
     const body = await res.json();
-    assert.deepEqual(Object.keys(body).sort(), ['status', 'uptime']);
+    assert.deepEqual(Object.keys(body).sort(), ['status', 'timestamp', 'uptime']);
     assert.equal(body.status, 'ok');
     assert.equal(typeof body.uptime, 'number');
     assert.ok(body.uptime >= 0, 'uptime darf nicht negativ sein');
+
+    // timestamp: ISO-8601 in UTC, zeitlich zwischen Anfrage und Antwort
+    assert.match(body.timestamp, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    const ts = Date.parse(body.timestamp);
+    assert.ok(ts >= before && ts <= after, 'timestamp muss die aktuelle Serverzeit sein');
   });
 
   test('uptime kommt aus process.uptime()', async (t) => {
@@ -73,7 +80,9 @@ describe('GET /health', () => {
 
     const res = await fetch(`${baseUrl}/health`);
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { status: 'ok', uptime: 42.5 });
+    const { timestamp, ...rest } = await res.json();
+    assert.deepEqual(rest, { status: 'ok', uptime: 42.5 });
+    assert.equal(typeof timestamp, 'string');
   });
 
   test('antwortet mit 500 und Fehler-JSON, wenn ein Fehler auftritt', async (t) => {

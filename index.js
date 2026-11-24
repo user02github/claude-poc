@@ -88,6 +88,7 @@ function createApp({ rateLimit: rateLimitOptions } = {}) {
       res.status(200).json({
         status: 'ok',
         uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
       });
     } catch (err) {
       console.error('Fehler in GET /health:', err);

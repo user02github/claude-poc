@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // .tool_response.filePath'); case \"$f\" in *.js) cd \"$CLAUDE_PROJECT_DIR\" && out=$(npm test 2>&1) || { echo \"npm test fehlgeschlagen nach Änderung an $f:\" >&2; echo \"$out\" | tail -40 >&2; exit 2; };; esac",
+            "timeout": 120,
+            "statusMessage": "npm test läuft..."
+          }
+        ]
+      }
+    ]
+  }
+}
