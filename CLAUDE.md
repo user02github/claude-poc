@@ -20,7 +20,7 @@ Tests in `test/*.test.js` start the app on port 0 (random free port) and hit it 
 
 - `GET /` — plain text `Hello from Claude Code in Ubuntu!`
 - `GET /info` — JSON with runtime info: `nodeVersion` (`process.version`), `platform`, `os`, `release`, `arch` (from Node's `os` module)
-- `GET /health` — JSON `{ status: 'ok', uptime }` (`uptime` = `process.uptime()` in Sekunden)
+- `GET /health` — JSON `{ status: 'ok', uptime, timestamp }` (`uptime` = `process.uptime()` in Sekunden, `timestamp` = aktuelle Serverzeit als ISO-8601 in UTC)
 - `POST /api/echo` — body must be `application/json` (else 415) with exactly one field `message` (string, 1–1000 chars after trim; else 400 with `details`). Returns `{ echo: { message }, receivedAt }`.
 
 All `/api/*` routes are rate-limited per IP via `express-rate-limit` (default 10 requests / 60 s, configurable with `RATE_LIMIT_MAX` and `RATE_LIMIT_WINDOW_MS`); exceeding it returns 429 with `Retry-After`. `/`, `/info` and `/health` are not limited.
