@@ -97,6 +97,35 @@ describe('GET /health', () => {
   });
 });
 
+describe('GET /time', () => {
+  test('antwortet mit 200 und { time, unixMs, timeZone }', async () => {
+    const before = Date.now();
+    const res = await fetch(`${baseUrl}/time`);
+    const after = Date.now();
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type'), /application\/json/);
+
+    const body = await res.json();
+    assert.deepEqual(Object.keys(body).sort(), ['time', 'timeZone', 'unixMs']);
+    assert.match(body.time, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    assert.equal(typeof body.unixMs, 'number');
+    assert.ok(body.unixMs >= before && body.unixMs <= after, 'unixMs muss die aktuelle Serverzeit sein');
+    assert.equal(Date.parse(body.time), body.unixMs, 'time und unixMs müssen denselben Zeitpunkt beschreiben');
+    assert.equal(body.timeZone, Intl.DateTimeFormat().resolvedOptions().timeZone);
+  });
+
+  test('antwortet mit 500 und Fehler-JSON, wenn ein Fehler auftritt', async (t) => {
+    t.mock.method(Date.prototype, 'toISOString', () => {
+      throw new Error('simulierter Fehler');
+    });
+    t.mock.method(console, 'error', () => {});
+
+    const res = await fetch(`${baseUrl}/time`);
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), { error: 'Interner Serverfehler' });
+  });
+});
+
 describe('Unbekannte Route', () => {
   test('antwortet mit 404', async () => {
     const res = await fetch(`${baseUrl}/gibt-es-nicht`);

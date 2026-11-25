@@ -117,6 +117,21 @@ function createApp({ rateLimit: rateLimitOptions } = {}) {
     }
   });
 
+  // Aktuelle Serverzeit: ISO-8601 (UTC), Unix-Zeit in ms und Zeitzone des Servers
+  app.get('/time', (req, res) => {
+    try {
+      const now = new Date();
+      res.status(200).json({
+        time: now.toISOString(),
+        unixMs: now.getTime(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+    } catch (err) {
+      console.error('Fehler in GET /time:', err);
+      res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+  });
+
   // Fehler aus express.json() (kaputtes JSON, zu großer Body) als JSON statt HTML beantworten
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
